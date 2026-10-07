@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "drills",
+  "info": {
+    "singularName": "drill",
+    "pluralName": "drills",
+    "displayName": "Drill",
+    "description": "Readback exercise"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "prompt": {
+      "type": "text",
+      "required": true
+    },
+    "model": {
+      "type": "text",
+      "required": true
+    },
+    "required": {
+      "type": "component",
+      "repeatable": true,
+      "component": "drill.keyword"
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter",
+      "inversedBy": "drills"
+    }
+  }
+}

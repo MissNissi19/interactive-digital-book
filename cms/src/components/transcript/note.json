@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_transcript_notes",
+  "info": {
+    "displayName": "Note",
+    "icon": "sticky-note",
+    "description": "Scenario side note"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

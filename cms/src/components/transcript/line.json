@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_transcript_lines",
+  "info": {
+    "displayName": "Line",
+    "icon": "comment-alt",
+    "description": "Radio transcript line"
+  },
+  "options": {},
+  "attributes": {
+    "role": {
+      "type": "enumeration",
+      "enum": [
+        "pilot",
+        "tower",
+        "info",
+        "action"
+      ],
+      "required": true
+    },
+    "text": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

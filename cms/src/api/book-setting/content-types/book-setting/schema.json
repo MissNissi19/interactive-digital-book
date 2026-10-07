@@ -1,0 +1,32 @@
+{
+  "kind": "singleType",
+  "collectionName": "book_settings",
+  "info": {
+    "singularName": "book-setting",
+    "pluralName": "book-settings",
+    "displayName": "Book Settings",
+    "description": "Global book metadata"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  }
+}

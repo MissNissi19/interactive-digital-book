@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "scenarios",
+  "info": {
+    "singularName": "scenario",
+    "pluralName": "scenarios",
+    "displayName": "Scenario",
+    "description": "Radio transcript scenario"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "kicker": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "lines": {
+      "type": "component",
+      "repeatable": true,
+      "component": "transcript.line"
+    },
+    "notes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "transcript.note"
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter",
+      "inversedBy": "scenarios"
+    }
+  }
+}

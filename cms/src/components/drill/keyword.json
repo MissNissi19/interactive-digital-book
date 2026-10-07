@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_drill_keywords",
+  "info": {
+    "displayName": "Keyword",
+    "icon": "key",
+    "description": "Required keyword in readback"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

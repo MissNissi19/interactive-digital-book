@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "alphabet_entries",
+  "info": {
+    "singularName": "alphabet-entry",
+    "pluralName": "alphabet-entries",
+    "displayName": "Alphabet Entry",
+    "description": "NATO phonetic alphabet letter"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "letter": {
+      "type": "string",
+      "required": true
+    },
+    "word": {
+      "type": "string",
+      "required": true
+    },
+    "pronunciation": {
+      "type": "string"
+    }
+  }
+}
