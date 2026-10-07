@@ -52,7 +52,7 @@ const frequencyLabels: Record<string, string> = {
 }
 
 async function fpdb<T>(path: string, onUsage: (usage: Usage) => void): Promise<T> {
-  const response = await fetch(`/api/fpdb/${path}`)
+  const response = await fetch(`https://api.flightplandatabase.com/${path}`, { headers: { Accept: 'application/json', 'X-Units': 'AVIATION' } })
   onUsage({ used: response.headers.get('x-limit-used'), cap: response.headers.get('x-limit-cap') })
   const data = await response.json().catch(() => null)
   if (!response.ok) {
