@@ -206,16 +206,16 @@ const scenarios: Scenario[] = [
     intro: 'To join an uncontrolled circuit in accordance with the Standard Overhead Joining Procedure always approach the airfield at 2000 ft AGL or as per AIP, and make the first radio call at approximately 5–10nm inbound. Template: Traffic addressing · Who and type · Details · QNH · Intention · Who.',
     lines: [
       { role: 'action', text: 'Example when starting at an uncontrolled airfield (including Rand Airport when the tower is closed / unmanned):' },
-      { role: 'pilot', text: 'Rand Traffic, ZS-MOC C172, parked Hanger 33, …… Crew onboard ……hrs Duration ……hrs Endurance, taxiing to holding point Runway 35, will hold short Runway 29, QNH 1026, for Circuits / Flight to General Flying Area, MOC' },
+      { role: 'pilot', text: 'Rand Traffic, ZS-PTA C172, parked Hanger 33, …… Crew onboard ……hrs Duration ……hrs Endurance, taxiing to holding point Runway 35, will hold short Runway 29, QNH 1026, for Circuits / Flight to General Flying Area, PTA' },
       { role: 'action', text: 'Then report when crossing a runway, entering a runway, rolling on the runway, when airborne and when on every leg in the circuit' },
       { role: 'action', text: 'Example when entering FARG airfield, elevation 3700 ft, Runway 16/34:' },
-      { role: 'pilot', text: '1 · Rustenburg Traffic, ZS-MOC C172, inbound from the East approximately 5nm to join overhead the airfield at 5700 ft, QNH 1020, MOC' },
-      { role: 'pilot', text: '2 · Rustenburg Traffic, MOC C172, overhead the airfield at 5700 ft for a windsock inspection, MOC' },
-      { role: 'pilot', text: '3 · Rustenburg Traffic, MOC C172, descending on the western side of the airfield to 4700 ft to join left Downwind Runway 16, MOC' },
-      { role: 'pilot', text: '4 · Rustenburg Traffic, MOC, overhead threshold 34 to join left Downwind Runway 16, MOC' },
-      { role: 'pilot', text: '5 · Rustenburg Traffic, MOC, left Downwind Runway 16 touch and go, MOC' },
-      { role: 'pilot', text: '6 · Rustenburg Traffic, MOC, left Base Runway 16 touch and go, MOC' },
-      { role: 'pilot', text: '7 · Rustenburg Traffic, MOC, Final Approach Runway 16 touch and go, MOC' },
+      { role: 'pilot', text: '1 · Rustenburg Traffic, ZS-PTA C172, inbound from the East approximately 5nm to join overhead the airfield at 5700 ft, QNH 1020, PTA' },
+      { role: 'pilot', text: '2 · Rustenburg Traffic, PTA C172, overhead the airfield at 5700 ft for a windsock inspection, PTA' },
+      { role: 'pilot', text: '3 · Rustenburg Traffic, PTA C172, descending on the western side of the airfield to 4700 ft to join left Downwind Runway 16, PTA' },
+      { role: 'pilot', text: '4 · Rustenburg Traffic, PTA, overhead threshold 34 to join left Downwind Runway 16, PTA' },
+      { role: 'pilot', text: '5 · Rustenburg Traffic, PTA, left Downwind Runway 16 touch and go, PTA' },
+      { role: 'pilot', text: '6 · Rustenburg Traffic, PTA, left Base Runway 16 touch and go, PTA' },
+      { role: 'pilot', text: '7 · Rustenburg Traffic, PTA, Final Approach Runway 16 touch and go, PTA' },
     ],
     notes: [
       'Descend on the dead side from 2000 ft AGL to circuit altitude of 1000 ft AGL before joining downwind on the live side.',
@@ -228,13 +228,13 @@ const scenarios: Scenario[] = [
     title: 'After touch and go: leaving an unmanned airspace',
     kicker: 'Pages 17–18 · Outbound',
     lines: [
-      { role: 'pilot', text: 'Rustenburg Traffic, MOC airborne Runway 16' },
-      { role: 'pilot', text: 'Rustenburg Traffic, MOC left crosswind Runway 16' },
+      { role: 'pilot', text: 'Rustenburg Traffic, PTA airborne Runway 16' },
+      { role: 'pilot', text: 'Rustenburg Traffic, PTA left crosswind Runway 16' },
       { role: 'action', text: 'Continue the climb to circuit altitude' },
-      { role: 'pilot', text: 'Rustenburg Traffic, MOC left Downwind Runway 16, 4700 ft routing overhead the field' },
-      { role: 'pilot', text: 'Rustenburg Traffic, MOC overhead the field climbing to 5700 ft routing south towards Krugersdorp' },
+      { role: 'pilot', text: 'Rustenburg Traffic, PTA left Downwind Runway 16, 4700 ft routing overhead the field' },
+      { role: 'pilot', text: 'Rustenburg Traffic, PTA overhead the field climbing to 5700 ft routing south towards Krugersdorp' },
       { role: 'action', text: 'At 5nm outbound:' },
-      { role: 'pilot', text: 'Rustenburg Traffic, MOC 5nm south of the airfield, outbound, changing frequency to 124.8' },
+      { role: 'pilot', text: 'Rustenburg Traffic, PTA 5nm south of the airfield, outbound, changing frequency to 124.8' },
     ],
     notes: ['Climb to 2000 ft AGL once clear of the circuit, overhead the field.'],
   },
@@ -279,7 +279,6 @@ function GeneralFlyingAreaChapter() {
   const jumpTo = (id: string) => {
     setActive(id)
     cancelSpeech()
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (
@@ -304,7 +303,7 @@ function GeneralFlyingAreaChapter() {
                 key={item}
                 onClick={() => chooseAccent(item)}
                 aria-pressed={accent === item}
-                className={`px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] transition ${accent === item ? 'bg-navy text-paper' : 'text-ink/50 hover:bg-ink/5 hover:text-ink'}`}
+                className={`px-4 py-2 font-mono font-semibold text-[10px] uppercase tracking-[0.16em] transition ${accent === item ? 'bg-navy text-paper' : 'text-brass-dark hover:bg-brass/10 hover:text-ink'}`}
               >
                 {accentLabels[item]}
               </button>
@@ -320,15 +319,15 @@ function GeneralFlyingAreaChapter() {
           <button
             key={item.id}
             onClick={() => jumpTo(item.id)}
-            className={`rounded-full px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] transition ${active === item.id ? 'bg-navy text-paper' : 'text-ink/50 hover:bg-ink/5 hover:text-ink'}`}
+            className={`rounded-full px-4 py-2 font-mono font-semibold text-[10px] uppercase tracking-[0.16em] transition ${active === item.id ? 'bg-navy text-paper' : 'text-brass-dark hover:bg-brass/10 hover:text-ink'}`}
           >
             {item.label}
           </button>
         ))}
       </nav>
 
-      <div className="mt-6 space-y-8">
-        {scenarios.map((item) => <Transcript key={item.id} scenario={item} />)}
+      <div className="mt-6">
+        {scenarios.filter((item) => item.id === active).map((item) => <Transcript key={item.id} scenario={item} />)}
       </div>
     </motion.article>
   )

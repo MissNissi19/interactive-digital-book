@@ -6,6 +6,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  outputFileTracingIncludes: {
+    '/api/fpdb/[...path]': ['./data/airports/**'],
+  },
 }
 
 export default nextConfig

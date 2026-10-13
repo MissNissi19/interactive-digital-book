@@ -69,7 +69,7 @@ const readbackDrills: { prompt: string; model: string; required: string[] }[] = 
   },
 ]
 
-const spellingItems = ['ZS-MOC', 'ZS-KSF', 'ZS-NBN', 'ZS-SVH', 'ZS-OFU', 'ZS-KBW', 'ZS-JZS', 'ZS-KCZ']
+const spellingItems = ['ZS-PTA', 'ZS-KSF', 'ZS-NBN', 'ZS-SVH', 'ZS-OFU', 'ZS-KBW', 'ZS-JZS', 'ZS-KCZ']
 
 const letterWordMap = new Map(phoneticAlphabet.map(([letter, word]) => [letter, word]))
 
@@ -242,7 +242,7 @@ function ReadbackExercise() {
               <Button onClick={listen} variant="ghost" size="icon" aria-label="Listen to instruction" className="size-8 shrink-0 text-ink/40 hover:text-ink"><Volume2 className="size-4" /></Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="Your readback…" disabled={checked} aria-label="Your readback" className="min-w-56 flex-1 border-ink/15 bg-white font-serif" />
+              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="Your readback…" disabled={checked} aria-label="Your readback" className="min-w-56 flex-1 border-ink/15 bg-white font-serif text-ink" />
               <Button onClick={check} disabled={checked || !value.trim()} className="gap-2 bg-navy text-paper hover:bg-navy/90"><Check className="size-4" /> Check</Button>
             </div>
             {checked && (
@@ -314,7 +314,7 @@ function SpellingExercise() {
       <CardHeader className="border-b border-ink/10 pb-5">
         <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-brass-dark"><SpellCheck className="size-4" /> Spell it in NATO</p>
         <CardTitle className="mt-2 font-display text-3xl text-ink">Say the call sign properly</CardTitle>
-        <CardDescription className="mt-2 max-w-2xl font-serif text-base leading-relaxed">Write the phonetic spelling of each call sign, e.g. “Zulu Sierra Mike Oscar Charlie”.</CardDescription>
+        <CardDescription className="mt-2 max-w-2xl font-serif text-base leading-relaxed">Write the phonetic spelling of each call sign, e.g. “Zulu Sierra Papa Tango Alfa”.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 p-5">
         {!finished && (
@@ -322,7 +322,7 @@ function SpellingExercise() {
             <ScoreBar done={done} total={items.length} correct={correct} />
             <p className="text-center font-display text-5xl tracking-wide text-ink">{callsign}</p>
             <div className="flex flex-wrap justify-center gap-2">
-              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="e.g. zulu sierra mike oscar charlie" disabled={checked} aria-label="Phonetic spelling" className="w-full max-w-lg border-ink/15 bg-white text-center font-serif" />
+              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="e.g. zulu sierra papa tango alfa" disabled={checked} aria-label="Phonetic spelling" className="w-full max-w-lg border-ink/15 bg-white text-center font-serif text-ink" />
             </div>
             <div className="flex justify-center">
               <Button onClick={check} disabled={checked || !value.trim()} className="gap-2 bg-navy text-paper hover:bg-navy/90"><Check className="size-4" /> Check</Button>
@@ -388,7 +388,7 @@ function ExercisesChapter() {
                 key={item}
                 onClick={() => chooseAccent(item)}
                 aria-pressed={accent === item}
-                className={`px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] transition ${accent === item ? 'bg-navy text-paper' : 'text-ink/50 hover:bg-ink/5 hover:text-ink'}`}
+                className={`px-4 py-2 font-mono font-semibold text-[10px] uppercase tracking-[0.16em] transition ${accent === item ? 'bg-navy text-paper' : 'text-brass-dark hover:bg-brass/10 hover:text-ink'}`}
               >
                 {accentLabels[item]}
               </button>

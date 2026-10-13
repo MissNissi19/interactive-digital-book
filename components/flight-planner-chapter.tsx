@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { AlertTriangle, CloudSun, ExternalLink, LoaderCircle, PlaneLanding, PlaneTakeoff, Radio, Search, Sunrise, Sunset, Volume2 } from 'lucide-react'
+import { AlertTriangle, CloudSun, Database, ExternalLink, LoaderCircle, PlaneLanding, PlaneTakeoff, Radio, Search, Sunrise, Sunset, Volume2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -42,6 +42,7 @@ type Plan = {
   popularity: number
   notes: string | null
   tags: string[]
+  generated?: boolean
   route?: { nodes: RouteNode[] }
 }
 type Usage = { used: string | null; cap: string | null }
@@ -51,16 +52,29 @@ const frequencyLabels: Record<string, string> = {
   TWR: 'Tower', GND: 'Ground', APP: 'Approach', DEP: 'Departure', ATIS: 'ATIS', CTR: 'Centre', REC: 'Information', UNIC: 'Unicom', CTAF: 'CTAF', AFIS: 'AFIS', FSS: 'Flight service',
 }
 
-async function fpdb<T>(path: string, onUsage: (usage: Usage) => void): Promise<T> {
-  const response = await fetch(`https://api.flightplandatabase.com/${path}`, { headers: { Accept: 'application/json', 'X-Units': 'AVIATION' } })
+async function fpdbResponse(path: string) {
+  try {
+    const direct = await fetch(`https://api.flightplandatabase.com/${path}`, { headers: { Accept: 'application/json', 'X-Units': 'AVIATION' }, signal: AbortSignal.timeout(6000) })
+    if (direct.ok) return direct
+  } catch {}
+  return fetch(`/api/fpdb/${path}`, { headers: { 'x-fpdb-fallback': '1' } })
+}
+
+async function fpdb<T>(path: string, onUsage: (usage: Usage) => void): Promise<{ data: T; local: boolean }> {
+  const response = await fpdbResponse(path)
   onUsage({ used: response.headers.get('x-limit-used'), cap: response.headers.get('x-limit-cap') })
   const data = await response.json().catch(() => null)
   if (!response.ok) {
     if (response.status === 429) throw new Error('Daily request limit reached. Add an API key or try again later.')
     if (response.status === 404) throw new Error('Nothing found for that request.')
+    if (response.status >= 500) throw new Error(data?.message ?? 'Flight Plan Database is temporarily unavailable. Please try again in a few minutes.')
     throw new Error(data?.message ?? `Request failed (${response.status})`)
   }
-  return data as T
+  return { data: data as T, local: response.headers.get('x-data-source') === 'local' }
+}
+
+function LocalDataNotice({ children }: { children: string }) {
+  return <p className="flex items-start gap-2 rounded-lg border border-ink/10 bg-paper px-4 py-3 font-serif text-sm text-ink/70"><Database className="mt-0.5 size-4 shrink-0 text-brass-dark" />{children}</p>
 }
 
 function formatMHz(hz: number) {
@@ -103,6 +117,7 @@ function describeMetar(metar: string) {
 function AirportBriefing({ onUsage }: { onUsage: (usage: Usage) => void }) {
   const [query, setQuery] = useState('FAGM')
   const [airport, setAirport] = useState<Airport | null>(null)
+  const [local, setLocal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -116,7 +131,9 @@ function AirportBriefing({ onUsage }: { onUsage: (usage: Usage) => void }) {
     setLoading(true)
     setError(null)
     try {
-      setAirport(await fpdb<Airport>(`nav/airport/${code}`, onUsage))
+      const result = await fpdb<Airport>(`nav/airport/${code}`, onUsage)
+      setAirport(result.data)
+      setLocal(result.local)
     } catch (err) {
       setAirport(null)
       setError((err as Error).message)
@@ -136,6 +153,7 @@ function AirportBriefing({ onUsage }: { onUsage: (usage: Usage) => void }) {
 
   const metarLines = airport?.weather?.METAR ? describeMetar(airport.weather.METAR) : []
   const timeZone = airport?.timezone?.name
+  const zulu = timeZone === 'UTC' ? 'Z' : ''
 
   const sayFrequency = (frequency: Frequency) => {
     cancelSpeech()
@@ -156,13 +174,13 @@ function AirportBriefing({ onUsage }: { onUsage: (usage: Usage) => void }) {
         <CardTitle className="mt-2 font-display text-3xl text-ink">Know the field before you call it</CardTitle>
         <CardDescription className="max-w-2xl font-serif text-base leading-relaxed">Runways, radio frequencies and the latest METAR for any airport, by ICAO code.</CardDescription>
         <form onSubmit={submit} className="mt-4 flex flex-wrap items-center gap-2">
-          <Input value={query} onChange={(event) => setQuery(event.target.value.toUpperCase())} maxLength={4} aria-label="ICAO code" className="w-28 border-ink/15 bg-white font-mono uppercase tracking-[0.2em]" />
+          <Input value={query} onChange={(event) => setQuery(event.target.value.toUpperCase())} maxLength={4} aria-label="ICAO code" className="w-28 border-ink/15 bg-white font-mono font-semibold uppercase tracking-[0.2em] text-brass-dark" />
           <Button type="submit" disabled={loading} className="gap-2 bg-navy text-paper hover:bg-navy/90">
             {loading ? <LoaderCircle className="size-4 animate-spin" /> : <Search className="size-4" />} Brief me
           </Button>
           <div className="flex flex-wrap gap-1.5">
             {quickAirports.map((code) => (
-              <button key={code} type="button" onClick={() => load(code)} className={`rounded-full border px-3 py-1 font-mono text-[10px] tracking-[0.16em] transition ${airport?.ICAO === code ? 'border-navy bg-navy text-paper' : 'border-ink/15 text-ink/55 hover:border-brass hover:text-ink'}`}>{code}</button>
+              <button key={code} type="button" onClick={() => load(code)} className={`rounded-full border px-3 py-1 font-mono text-[10px] tracking-[0.16em] transition ${airport?.ICAO === code ? 'border-navy bg-navy text-paper' : 'border-ink/15 font-semibold text-brass-dark hover:border-brass hover:text-ink'}`}>{code}</button>
             ))}
           </div>
         </form>
@@ -172,6 +190,7 @@ function AirportBriefing({ onUsage }: { onUsage: (usage: Usage) => void }) {
         {loading && !airport && <p className="flex items-center gap-2 font-mono text-xs text-ink/50"><LoaderCircle className="size-4 animate-spin" /> Contacting the database…</p>}
         {airport && (
           <div className={`space-y-6 transition-opacity ${loading ? 'opacity-50' : ''}`}>
+            {local && <LocalDataNotice>Flight Plan Database is unavailable right now, so this briefing uses the built-in airport database (OurAirports) with live weather from AviationWeather.gov. Times are in UTC.</LocalDataNotice>}
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="font-mono text-xs tracking-[0.2em] text-brass-dark">{airport.ICAO}{airport.IATA ? ` · ${airport.IATA}` : ''}</p>
@@ -180,8 +199,8 @@ function AirportBriefing({ onUsage }: { onUsage: (usage: Usage) => void }) {
               </div>
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div className="rounded-lg border border-ink/10 bg-paper px-4 py-2"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">Elevation</p><p className="font-display text-xl text-ink">{Math.round(airport.elevation)} ft</p></div>
-                <div className="rounded-lg border border-ink/10 bg-paper px-4 py-2"><p className="flex items-center justify-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45"><Sunrise className="size-3" /> Sunrise</p><p className="font-display text-xl text-ink">{formatTime(airport.times?.sunrise, timeZone)}</p></div>
-                <div className="rounded-lg border border-ink/10 bg-paper px-4 py-2"><p className="flex items-center justify-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45"><Sunset className="size-3" /> Sunset</p><p className="font-display text-xl text-ink">{formatTime(airport.times?.sunset, timeZone)}</p></div>
+                <div className="rounded-lg border border-ink/10 bg-paper px-4 py-2"><p className="flex items-center justify-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45"><Sunrise className="size-3" /> Sunrise</p><p className="font-display text-xl text-ink">{formatTime(airport.times?.sunrise, timeZone)}{airport.times ? zulu : ''}</p></div>
+                <div className="rounded-lg border border-ink/10 bg-paper px-4 py-2"><p className="flex items-center justify-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45"><Sunset className="size-3" /> Sunset</p><p className="font-display text-xl text-ink">{formatTime(airport.times?.sunset, timeZone)}{airport.times ? zulu : ''}</p></div>
               </div>
             </div>
 
@@ -235,6 +254,7 @@ function RouteFinder({ onUsage }: { onUsage: (usage: Usage) => void }) {
   const [to, setTo] = useState('FACT')
   const [plans, setPlans] = useState<Plan[] | null>(null)
   const [selected, setSelected] = useState<Plan | null>(null)
+  const [local, setLocal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingPlan, setLoadingPlan] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -252,11 +272,13 @@ function RouteFinder({ onUsage }: { onUsage: (usage: Usage) => void }) {
     setError(null)
     setSelected(null)
     try {
-      const results = await fpdb<Plan[]>(`search/plans?${params.toString()}`, onUsage)
+      const { data: results, local: fromLocal } = await fpdb<Plan[]>(`search/plans?${params.toString()}`, onUsage)
       setPlans(results)
+      setLocal(fromLocal)
       if (!results.length) setError('No saved flight plans for that pair yet.')
     } catch (err) {
       setPlans(null)
+      setLocal(false)
       setError((err as Error).message)
     } finally {
       setLoading(false)
@@ -268,10 +290,14 @@ function RouteFinder({ onUsage }: { onUsage: (usage: Usage) => void }) {
       setSelected(null)
       return
     }
+    if (plan.route) {
+      setSelected(plan)
+      return
+    }
     setLoadingPlan(plan.id)
     setError(null)
     try {
-      setSelected(await fpdb<Plan>(`plan/${plan.id}`, onUsage))
+      setSelected((await fpdb<Plan>(`plan/${plan.id}`, onUsage)).data)
     } catch (err) {
       setError((err as Error).message)
     } finally {
@@ -286,8 +312,8 @@ function RouteFinder({ onUsage }: { onUsage: (usage: Usage) => void }) {
         <CardTitle className="mt-2 font-display text-3xl text-ink">Flight plans other pilots have flown</CardTitle>
         <CardDescription className="max-w-2xl font-serif text-base leading-relaxed">Search the database by departure and destination, then open a plan to see every waypoint on the route.</CardDescription>
         <form onSubmit={search} className="mt-4 flex flex-wrap items-center gap-2">
-          <label className="flex items-center gap-2 rounded-md border border-ink/15 bg-white pl-3"><PlaneTakeoff className="size-4 text-ink/45" /><Input value={from} onChange={(event) => setFrom(event.target.value.toUpperCase())} maxLength={4} aria-label="Departure ICAO" placeholder="FROM" className="w-24 border-0 font-mono uppercase tracking-[0.2em] shadow-none focus-visible:ring-0" /></label>
-          <label className="flex items-center gap-2 rounded-md border border-ink/15 bg-white pl-3"><PlaneLanding className="size-4 text-ink/45" /><Input value={to} onChange={(event) => setTo(event.target.value.toUpperCase())} maxLength={4} aria-label="Destination ICAO" placeholder="TO" className="w-24 border-0 font-mono uppercase tracking-[0.2em] shadow-none focus-visible:ring-0" /></label>
+          <label className="flex items-center gap-2 rounded-md border border-ink/15 bg-white pl-3"><PlaneTakeoff className="size-4 text-ink/45" /><Input value={from} onChange={(event) => setFrom(event.target.value.toUpperCase())} maxLength={4} aria-label="Departure ICAO" placeholder="FROM" className="w-24 border-0 font-mono font-semibold uppercase tracking-[0.2em] text-brass-dark shadow-none focus-visible:ring-0" /></label>
+          <label className="flex items-center gap-2 rounded-md border border-ink/15 bg-white pl-3"><PlaneLanding className="size-4 text-ink/45" /><Input value={to} onChange={(event) => setTo(event.target.value.toUpperCase())} maxLength={4} aria-label="Destination ICAO" placeholder="TO" className="w-24 border-0 font-mono font-semibold uppercase tracking-[0.2em] text-brass-dark shadow-none focus-visible:ring-0" /></label>
           <Button type="submit" disabled={loading} className="gap-2 bg-navy text-paper hover:bg-navy/90">
             {loading ? <LoaderCircle className="size-4 animate-spin" /> : <Search className="size-4" />} Find routes
           </Button>
@@ -295,6 +321,7 @@ function RouteFinder({ onUsage }: { onUsage: (usage: Usage) => void }) {
       </CardHeader>
       <CardContent className="space-y-3 p-5">
         {error && <p className="flex items-center gap-2 rounded-lg border border-brass/40 bg-[#fbf0d8]/70 px-4 py-3 font-serif text-sm text-ink/75"><AlertTriangle className="size-4 text-brass-dark" />{error}</p>}
+        {local && plans && plans.length > 0 && <LocalDataNotice>Flight Plan Database is unavailable right now, so this route was generated from the built-in airport and navaid database. It follows radio beacons near the direct track; it is a teaching aid, not a filed or published route.</LocalDataNotice>}
         {!plans && !error && <p className="font-serif text-sm text-ink/55">Try FAOR → FACT, or leave one field empty to see every route from or to an airport.</p>}
         {plans?.map((plan) => (
           <div key={plan.id} className="overflow-hidden rounded-lg border border-ink/10 bg-white/80">
@@ -304,6 +331,7 @@ function RouteFinder({ onUsage }: { onUsage: (usage: Usage) => void }) {
                 <span className="block font-serif text-sm text-ink/55">{plan.fromName ?? '—'} to {plan.toName ?? '—'}</span>
               </span>
               <span className="flex flex-wrap items-center gap-2">
+                {plan.generated && <Badge variant="outline" className="border-brass/50 font-mono text-[10px] text-brass-dark">Generated</Badge>}
                 <Badge variant="outline" className="border-ink/15 font-mono text-[10px]">{Math.round(plan.distance)} nm</Badge>
                 <Badge variant="outline" className="border-ink/15 font-mono text-[10px]">{plan.waypoints} wpts</Badge>
                 {plan.maxAltitude > 0 && <Badge variant="outline" className="border-ink/15 font-mono text-[10px]">{plan.maxAltitude.toLocaleString('en-GB')} ft</Badge>}
@@ -323,7 +351,7 @@ function RouteFinder({ onUsage }: { onUsage: (usage: Usage) => void }) {
                     </li>
                   ))}
                 </ol>
-                <a href={`https://flightplandatabase.com/plan/${plan.id}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-brass-dark hover:text-ink">Open full plan <ExternalLink className="size-3.5" /></a>
+                {!plan.generated && <a href={`https://flightplandatabase.com/plan/${plan.id}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-brass-dark hover:text-ink">Open full plan <ExternalLink className="size-3.5" /></a>}
               </div>
             )}
           </div>

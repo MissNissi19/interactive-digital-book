@@ -70,9 +70,9 @@ const radioCheck: Scenario = {
   kicker: 'Before anything else',
   intro: 'Use the correct frequency: ensure your radio is tuned to the airport tower’s designated frequency (118.7 for FAGM), and turn the volume control up. After transmitting your radio check, listen carefully for the ATC’s response with a signal strength rating.',
   lines: [
-    { role: 'pilot', text: 'Rand Tower, ZS-MOC, Radio Check on 118.7' },
-    { role: 'tower', text: 'ZS-MOC, Rand Tower, reading strength 5, how do you read?' },
-    { role: 'pilot', text: 'Strength 5, MOC' },
+    { role: 'pilot', text: 'Rand Tower, ZS-PTA, Radio Check on 118.7' },
+    { role: 'tower', text: 'ZS-PTA, Rand Tower, reading strength 5, how do you read?' },
+    { role: 'pilot', text: 'Strength 5, PTA' },
   ],
 }
 
@@ -285,7 +285,7 @@ function RadioProceduresChapter() {
                 key={item}
                 onClick={() => chooseAccent(item)}
                 aria-pressed={accent === item}
-                className={`px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] transition ${accent === item ? 'bg-navy text-paper' : 'text-ink/50 hover:bg-ink/5 hover:text-ink'}`}
+                className={`px-4 py-2 font-mono font-semibold text-[10px] uppercase tracking-[0.16em] transition ${accent === item ? 'bg-navy text-paper' : 'text-brass-dark hover:bg-brass/10 hover:text-ink'}`}
               >
                 {accentLabels[item]}
               </button>
