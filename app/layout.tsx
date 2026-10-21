@@ -5,7 +5,6 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Interactive Digital Book',
   description: 'Aviation radio communication and mapping platform',
-  generator: 'v0.app',
   openGraph: {
     title: 'Interactive Digital Book',
     description: 'Aviation radio communication and mapping platform',
