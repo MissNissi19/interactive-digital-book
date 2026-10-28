@@ -1309,6 +1309,10 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    exerciseAttempts: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::exercise-attempt.exercise-attempt'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1326,6 +1330,14 @@ export interface PluginUsersPermissionsUser
     role: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.role'
+    >;
+    studentProgress: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::student-progress.student-progress'
+    >;
+    testResults: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::test-result.test-result'
     >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

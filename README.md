@@ -48,7 +48,12 @@ and their own entries in three collections:
 | Student Progress    | `/api/student-progresses` | current chapter, completed chapters      |
 
 Every entry has a `student` relation that is set automatically from the JWT of
-the logged-in student (`cms/src/utils/student-owned.ts`). Students can only
+the logged-in student (`cms/src/utils/student-owned.ts`). The relation is
+One-to-Many from the user's side: the User content type
+(`cms/src/extensions/users-permissions/content-types/user/schema.json`) exposes
+`testResults`, `exerciseAttempts` and `studentProgress`, so opening a user in
+the dashboard (or `GET /api/users/me?populate[testResults]=true`) lists that
+student's entries. Students can only
 list, read, update and delete their own entries; admins see everything in the
 Strapi dashboard and can filter by student. Role permissions are granted on
 startup in `cms/src/index.ts`.
