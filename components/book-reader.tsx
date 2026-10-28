@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronDown, Lightbulb, RotateCcw, Volume2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -14,6 +14,8 @@ import GeneralFlyingAreaChapter from '@/components/general-flying-area-chapter'
 import FlightPlannerChapter from '@/components/flight-planner-chapter'
 import ExercisesChapter from '@/components/exercises-chapter'
 import TestsChapter from '@/components/tests-chapter'
+import StudentAuth from '@/components/student-auth'
+import { StudentProvider, useStudent } from '@/lib/student/client'
 import { BOOK_CHAPTERS } from '@/lib/chapters'
 import type { Accent } from '@/lib/speech'
 import { accentLabels, cancelSpeech, getAccent, primeVoices, setAccent, speak } from '@/lib/speech'
@@ -117,17 +119,47 @@ function Chapter({ chapter }: { chapter: string }) {
   return <motion.article key={chapter} initial={{ opacity: 0, rotateY: -12, x: 24 }} animate={{ opacity: 1, rotateY: 0, x: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }} style={{ perspective: 1400 }} className="mx-auto max-w-4xl"><p className="font-mono text-xs uppercase tracking-[0.3em] text-brass-dark">Chapter {data.number} · {data.kicker}</p><h2 className="mt-4 max-w-2xl font-display text-6xl leading-[.95] text-ink sm:text-8xl">{data.title}</h2><div className="my-10 grid gap-10 border-y border-ink/10 py-10 md:grid-cols-[.8fr_1.2fr]"><blockquote className="font-display text-3xl leading-tight text-brass-dark">“{data.quote}”</blockquote><div className="flex flex-col gap-5 font-serif text-lg leading-8 text-ink/70"><p>Every pilot remembers the first time the engine settled into a steady hum and the ground let go. Below, the world shrinks to fields and rivers; above, there is only the horizon and a voice in the headset, calm and certain, guiding you through the sky.</p><p>Radio is the thread that ties every aircraft to the ground and to each other. A single call, clear, brief, unhurried, can carry a clearance, a warning or a welcome home. The best pilots speak little and listen much, because in the air every word has a weight.</p><p>Between the transmissions lies the silence, and the silence matters too. It is where you think, where you scan the instruments, where you look outside and simply fly. Learn to love both the signal and the quiet, and the sky will always feel like home.</p></div></div><div className="flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-ink/45"><Check className="size-4 text-brass-dark" /> End of chapter</div></motion.article>
 }
 
-function BookReader() {
+function BookReaderInner() {
   const [opened, setOpened] = useState(false)
   const [chapterIndex, setChapterIndex] = useState(0)
+  const student = useStudent()
+  const restoredFor = useRef<number | null>(null)
+
+  // When a student signs in, continue where they left off.
+  useEffect(() => {
+    if (!student.user) {
+      restoredFor.current = null
+      return
+    }
+    if (restoredFor.current === student.user.id) return
+    restoredFor.current = student.user.id
+    const savedIndex = student.progress?.chapterIndex ?? 0
+    if (savedIndex > 0 && savedIndex < chapters.length) {
+      setOpened(true)
+      setChapterIndex(savedIndex)
+    }
+  }, [student.user, student.progress])
+
+  // Save the current chapter (and everything before it as completed) while reading.
+  const { saveProgress } = student
+  useEffect(() => {
+    if (!opened || chapterIndex === 0) return
+    const completedChapters = Array.from({ length: chapterIndex - 1 }, (_, index) => index + 1)
+    saveProgress({ chapterIndex, completedChapters })
+  }, [opened, chapterIndex, student.user?.id, saveProgress])
+
   const chapter = chapters[chapterIndex].id
   const progress = useMemo(() => Math.round((chapterIndex / (chapters.length - 1)) * 100), [chapterIndex])
   const next = () => setChapterIndex((index) => Math.min(index + 1, chapters.length - 1))
   const previous = () => setChapterIndex((index) => Math.max(index - 1, 0))
 
-  return <main className="min-h-screen bg-paper text-ink"><header className="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8"><div className="flex items-center gap-3"><div className="flex size-9 items-center justify-center rounded-full bg-navy text-brass-light"><BookOpen className="size-4" /></div><span className="font-display text-xl">The Last Signal</span></div>{opened && <div className="flex items-center gap-4"><span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45 sm:block">Reading progress {progress}%</span><div className="h-1.5 w-20 overflow-hidden rounded-full bg-ink/10 sm:w-32"><div className="h-full rounded-full bg-brass transition-all" style={{ width: `${progress}%` }} /></div></div>}</header><section className="px-5 pb-12 sm:px-8">{!opened ? <Cover onOpen={() => { setOpened(true); setChapterIndex(1) }} /> : <div className="mx-auto max-w-7xl"><div className="mb-8 flex flex-wrap items-center justify-between gap-4"><nav className="flex flex-wrap gap-2" aria-label="Chapters">{chapters.slice(1).map((item, index) => <button key={item.id} onClick={() => setChapterIndex(index + 1)} className={`rounded-full px-4 py-2 font-mono font-semibold text-[10px] uppercase tracking-[0.16em] transition ${chapter === item.id ? 'bg-navy text-paper' : 'text-brass-dark hover:bg-brass/10 hover:text-ink'}`}>{item.label}</button>)}</nav><button onClick={() => setOpened(false)} className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-ink/45 hover:text-ink"><ChevronDown className="size-4 rotate-90" /> Close book</button></div><div className="min-h-[680px] rounded-[2rem] border border-ink/10 bg-[#f8f1e4] px-5 py-10 shadow-[0_20px_60px_rgba(23,37,52,.08)] sm:px-10 sm:py-14 lg:px-16"><AnimatePresence mode="wait"><Chapter chapter={chapter} /></AnimatePresence><div className="mt-16 flex items-center justify-between border-t border-ink/10 pt-6"><Button onClick={previous} disabled={chapterIndex <= 1} variant="ghost" className="gap-2 text-ink/65 hover:text-ink"><ArrowLeft data-icon="inline-start" /> Previous</Button><span className="font-mono text-[10px] uppercase tracking-[0.25em] text-ink/35">{String(chapterIndex).padStart(2, '0')} / 03</span><Button onClick={next} disabled={chapterIndex >= chapters.length - 1} variant="ghost" className="gap-2 text-ink/65 hover:text-ink">Next <ArrowRight data-icon="inline-end" /></Button></div></div></div>}</section><footer className="mx-auto flex max-w-7xl items-center justify-between px-5 pb-8 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/35 sm:px-8"><span>Made for the curious</span><span>© 2024 · LS-01</span></footer></main>
+  return <main className="min-h-screen bg-paper text-ink"><header className="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8"><div className="flex items-center gap-3"><div className="flex size-9 items-center justify-center rounded-full bg-navy text-brass-light"><BookOpen className="size-4" /></div><span className="font-display text-xl">The Last Signal</span></div><div className="flex items-center gap-4">{opened && <><span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45 sm:block">Reading progress {progress}%</span><div className="h-1.5 w-20 overflow-hidden rounded-full bg-ink/10 sm:w-32"><div className="h-full rounded-full bg-brass transition-all" style={{ width: `${progress}%` }} /></div></>}<StudentAuth /></div></header><section className="px-5 pb-12 sm:px-8">{!opened ? <Cover onOpen={() => { setOpened(true); setChapterIndex(1) }} /> : <div className="mx-auto max-w-7xl"><div className="mb-8 flex flex-wrap items-center justify-between gap-4"><nav className="flex flex-wrap gap-2" aria-label="Chapters">{chapters.slice(1).map((item, index) => <button key={item.id} onClick={() => setChapterIndex(index + 1)} className={`rounded-full px-4 py-2 font-mono font-semibold text-[10px] uppercase tracking-[0.16em] transition ${chapter === item.id ? 'bg-navy text-paper' : 'text-brass-dark hover:bg-brass/10 hover:text-ink'}`}>{item.label}</button>)}</nav><button onClick={() => setOpened(false)} className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-ink/45 hover:text-ink"><ChevronDown className="size-4 rotate-90" /> Close book</button></div><div className="min-h-[680px] rounded-[2rem] border border-ink/10 bg-[#f8f1e4] px-5 py-10 shadow-[0_20px_60px_rgba(23,37,52,.08)] sm:px-10 sm:py-14 lg:px-16"><AnimatePresence mode="wait"><Chapter chapter={chapter} /></AnimatePresence><div className="mt-16 flex items-center justify-between border-t border-ink/10 pt-6"><Button onClick={previous} disabled={chapterIndex <= 1} variant="ghost" className="gap-2 text-ink/65 hover:text-ink"><ArrowLeft data-icon="inline-start" /> Previous</Button><span className="font-mono text-[10px] uppercase tracking-[0.25em] text-ink/35">{String(chapterIndex).padStart(2, '0')} / 03</span><Button onClick={next} disabled={chapterIndex >= chapters.length - 1} variant="ghost" className="gap-2 text-ink/65 hover:text-ink">Next <ArrowRight data-icon="inline-end" /></Button></div></div></div>}</section><footer className="mx-auto flex max-w-7xl items-center justify-between px-5 pb-8 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/35 sm:px-8"><span>Made for the curious</span><span>© 2024 · LS-01</span></footer></main>
 }
 
+
+function BookReader() {
+  return <StudentProvider><BookReaderInner /></StudentProvider>
+}
 
 export { toNato }
 export default BookReader

@@ -79,3 +79,27 @@ startup). To give someone access: Strapi admin → Content Manager → User → 
 `role` to *Teacher*. The teacher signs in at `/admin/login` with that user's
 email/username and password; the JWT is stored in an httpOnly cookie and all
 requests to Strapi are made server-side using `STRAPI_URL`.
+
+### Student accounts in the book
+
+Readers can **Sign in / Create account** from the book header
+(`components/student-auth.tsx`). The session is a Strapi Users & Permissions JWT
+kept in an httpOnly cookie (`student_jwt`); the browser only calls the app's own
+`/api/student/*` route handlers, which forward to Strapi with that token:
+
+| Route                            | Purpose                                              |
+| -------------------------------- | ---------------------------------------------------- |
+| `POST /api/student/login`        | `auth/local` → cookie + current progress             |
+| `POST /api/student/register`     | `auth/local/register` → cookie                       |
+| `POST /api/student/logout`       | clears the cookie                                    |
+| `GET /api/student/me`            | current user + latest progress                       |
+| `PUT /api/student/progress`      | upserts the student's `student-progress` entry       |
+| `POST /api/student/test-results` | stores a finished test                               |
+| `POST /api/student/exercise-attempts` | stores a finished listening/readback/spelling run |
+
+While signed in, the book saves automatically (`lib/student/client.tsx`): the
+current chapter and completed chapters on every chapter change, each submitted
+radio test (`components/tests-chapter.tsx`) and each finished exercise
+(`components/exercises-chapter.tsx`). Signing in reopens the book at the saved
+chapter. Everything shows up in the teacher dashboard at `/admin` and in Strapi.
+Without an account the book still works; nothing is saved.

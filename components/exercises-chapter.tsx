@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useSaveExerciseAttempt } from '@/lib/student/client'
 import { motion } from 'framer-motion'
 import { Check, ChevronRight, Headphones, Keyboard, RotateCcw, SpellCheck, Volume2, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -106,6 +107,7 @@ function ListenExercise() {
 
   const question = questions?.[index]
   const finished = questions !== null && index >= questions.length
+  useSaveExerciseAttempt('listening', 'listening', finished, correct, questions?.length ?? 0)
 
   const replay = () => {
     if (!question) return
@@ -196,6 +198,7 @@ function ReadbackExercise() {
 
   const drill = readbackDrills[index]
   const finished = index >= readbackDrills.length
+  useSaveExerciseAttempt('readback', 'readback', finished, correct, readbackDrills.length)
   const missing = checked ? drill.required.filter((token) => !normalizeText(value).includes(normalizeText(token))) : []
   const passed = checked && missing.length === 0
 
@@ -282,6 +285,7 @@ function SpellingExercise() {
 
   const callsign = items[index]
   const finished = index >= items.length
+  useSaveExerciseAttempt('spelling', 'spelling', finished, correct, items.length)
   const expected = callsign ? expectedSpelling(callsign) : ''
   const normalizeAnswer = (input: string) => normalizeText(input).replace(/\balfa\b/g, 'alpha')
   const passed = checked && normalizeAnswer(value) === normalizeAnswer(expected)

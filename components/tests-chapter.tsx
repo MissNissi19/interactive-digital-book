@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator'
 import { ScoreBar, shuffle } from '@/components/exercises-chapter'
 import { cancelSpeech, primeVoices } from '@/lib/speech'
+import { useStudent } from '@/lib/student/client'
 
 const testQuestions: { question: string; options: string[]; answer: number }[] = [
   { question: 'What does “Roger” mean on the radio?', options: ['Repeat your last message', 'I have received all of your last message', 'I will comply', 'Stand by'], answer: 1 },
@@ -33,6 +34,7 @@ function RadioTest() {
   const [index, setIndex] = useState(0)
   const [secondsLeft, setSecondsLeft] = useState(testDurationSeconds)
   const [finished, setFinished] = useState(false)
+  const { saveTestResult } = useStudent()
 
   useEffect(() => {
     if (!started || finished) return
@@ -76,6 +78,21 @@ function RadioTest() {
   const minutes = Math.floor(secondsLeft / 60)
   const seconds = String(secondsLeft % 60).padStart(2, '0')
   const percent = answers.length ? Math.round((score / answers.length) * 100) : 0
+
+  useEffect(() => {
+    if (!started || !finished || answers.length === 0) return
+    saveTestResult({
+      testKey: 'radio-test',
+      testTitle: 'Radio communication test',
+      score,
+      total: answers.length,
+      passed: percent >= 70,
+      durationSeconds: testDurationSeconds - secondsLeft,
+      answers: order.map((questionIndex, itemIndex) => ({ question: questionIndex, answer: answers[itemIndex] })),
+    })
+    // Only fire once per finished test; score/percent are fixed by then.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [started, finished])
 
   return (
     <Card className="border-ink/10 bg-white/70 shadow-[0_14px_40px_rgba(23,37,52,0.08)]">
