@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "student_progresses",
+  "info": {
+    "singularName": "student-progress",
+    "pluralName": "student-progresses",
+    "displayName": "Student Progress",
+    "description": "Reading progress of a student through the book"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "student": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "chapterIndex": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "completedChapters": {
+      "type": "json"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "lastOpenedAt": {
+      "type": "datetime"
+    }
+  }
+}

@@ -573,6 +573,63 @@ export interface ApiDrillDrill extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiExerciseAttemptExerciseAttempt
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'exercise_attempts';
+  info: {
+    description: 'One run of a listening / readback / spelling exercise by a student';
+    displayName: 'Exercise Attempt';
+    pluralName: 'exercise-attempts';
+    singularName: 'exercise-attempt';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    chapter: Schema.Attribute.Relation<'manyToOne', 'api::chapter.chapter'>;
+    completedAt: Schema.Attribute.DateTime;
+    correct: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    details: Schema.Attribute.JSON;
+    exerciseKey: Schema.Attribute.String;
+    kind: Schema.Attribute.Enumeration<
+      ['listening', 'readback', 'spelling', 'other']
+    > &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::exercise-attempt.exercise-attempt'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    student: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    total: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiQuestionQuestion extends Struct.CollectionTypeSchema {
   collectionName: 'questions';
   info: {
@@ -635,6 +692,119 @@ export interface ApiScenarioScenario extends Struct.CollectionTypeSchema {
     notes: Schema.Attribute.Component<'transcript.note', true>;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiStudentProgressStudentProgress
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'student_progresses';
+  info: {
+    description: 'Reading progress of a student through the book';
+    displayName: 'Student Progress';
+    pluralName: 'student-progresses';
+    singularName: 'student-progress';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    chapterIndex: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    completedChapters: Schema.Attribute.JSON;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    lastOpenedAt: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::student-progress.student-progress'
+    > &
+      Schema.Attribute.Private;
+    notes: Schema.Attribute.Text;
+    publishedAt: Schema.Attribute.DateTime;
+    student: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTestResultTestResult extends Struct.CollectionTypeSchema {
+  collectionName: 'test_results';
+  info: {
+    description: 'Result of a timed test taken by a student';
+    displayName: 'Test Result';
+    pluralName: 'test-results';
+    singularName: 'test-result';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    answers: Schema.Attribute.JSON;
+    completedAt: Schema.Attribute.DateTime;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    durationSeconds: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::test-result.test-result'
+    > &
+      Schema.Attribute.Private;
+    passed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    percent: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    score: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    student: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    test: Schema.Attribute.Relation<'manyToOne', 'api::test.test'>;
+    testKey: Schema.Attribute.String & Schema.Attribute.Required;
+    testTitle: Schema.Attribute.String;
+    total: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1184,8 +1354,11 @@ declare module '@strapi/strapi' {
       'api::book-setting.book-setting': ApiBookSettingBookSetting;
       'api::chapter.chapter': ApiChapterChapter;
       'api::drill.drill': ApiDrillDrill;
+      'api::exercise-attempt.exercise-attempt': ApiExerciseAttemptExerciseAttempt;
       'api::question.question': ApiQuestionQuestion;
       'api::scenario.scenario': ApiScenarioScenario;
+      'api::student-progress.student-progress': ApiStudentProgressStudentProgress;
+      'api::test-result.test-result': ApiTestResultTestResult;
       'api::test.test': ApiTestTest;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

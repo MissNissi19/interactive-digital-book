@@ -1,0 +1,62 @@
+{
+  "kind": "collectionType",
+  "collectionName": "test_results",
+  "info": {
+    "singularName": "test-result",
+    "pluralName": "test-results",
+    "displayName": "Test Result",
+    "description": "Result of a timed test taken by a student"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "student": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "test": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::test.test"
+    },
+    "testKey": {
+      "type": "string",
+      "required": true
+    },
+    "testTitle": {
+      "type": "string"
+    },
+    "score": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "total": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "percent": {
+      "type": "integer",
+      "min": 0,
+      "max": 100
+    },
+    "passed": {
+      "type": "boolean",
+      "default": false
+    },
+    "durationSeconds": {
+      "type": "integer",
+      "min": 0
+    },
+    "answers": {
+      "type": "json"
+    },
+    "completedAt": {
+      "type": "datetime"
+    }
+  }
+}

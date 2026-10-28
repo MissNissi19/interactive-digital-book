@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "exercise_attempts",
+  "info": {
+    "singularName": "exercise-attempt",
+    "pluralName": "exercise-attempts",
+    "displayName": "Exercise Attempt",
+    "description": "One run of a listening / readback / spelling exercise by a student"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "student": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "chapter": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::chapter.chapter"
+    },
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "listening",
+        "readback",
+        "spelling",
+        "other"
+      ],
+      "required": true
+    },
+    "exerciseKey": {
+      "type": "string"
+    },
+    "correct": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "total": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "details": {
+      "type": "json"
+    },
+    "completedAt": {
+      "type": "datetime"
+    }
+  }
+}
