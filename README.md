@@ -61,3 +61,21 @@ startup in `cms/src/index.ts`.
 Students sign up / log in through the standard endpoints
 (`POST /api/auth/local/register`, `POST /api/auth/local`) and send the returned
 `jwt` as `Authorization: Bearer <jwt>`.
+
+### Teacher dashboard (`/admin`)
+
+The Next.js app ships a simple English dashboard for the client/teacher at
+`/admin` (`app/admin`, `lib/admin`, `components/admin`). It lists every student
+with country, native language, level, current chapter, tests passed and last
+activity, lets the teacher filter by country/search, add students, and edit each
+student's profile, progress (current / completed chapters), notes and blocked
+status. All data lives in Strapi: the profile fields (`fullName`, `country`,
+`nativeLanguage`, `level`, `notes`) are on the Users & Permissions User, the
+progress in `student-progress`.
+
+Access is restricted to Strapi users with the **Teacher** role
+(`plugin::users-permissions` role type `teacher`, created automatically on
+startup). To give someone access: Strapi admin → Content Manager → User → set
+`role` to *Teacher*. The teacher signs in at `/admin/login` with that user's
+email/username and password; the JWT is stored in an httpOnly cookie and all
+requests to Strapi are made server-side using `STRAPI_URL`.

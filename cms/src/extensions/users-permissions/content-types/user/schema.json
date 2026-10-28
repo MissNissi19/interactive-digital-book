@@ -65,6 +65,22 @@
       "inversedBy": "users",
       "configurable": false
     },
+    "fullName": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "nativeLanguage": {
+      "type": "string"
+    },
+    "level": {
+      "type": "enumeration",
+      "enum": ["beginner", "intermediate", "advanced"]
+    },
+    "notes": {
+      "type": "text"
+    },
     "testResults": {
       "type": "relation",
       "relation": "oneToMany",

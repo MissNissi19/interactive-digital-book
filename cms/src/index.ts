@@ -1,4 +1,5 @@
 import type { Core } from '@strapi/strapi';
+import { TEACHER_ROLE } from './utils/student-owned';
 
 /** Collections where every entry belongs to exactly one student. */
 const STUDENT_OWNED = [
@@ -27,6 +28,29 @@ const bookContentActions = [
   ...actionsFor(BOOK_CONTENT, READ_ACTIONS),
   'api::book-setting.book-setting.find',
 ];
+
+/** What the Next.js /admin dashboard (teacher account) may do with student accounts. */
+const teacherUserActions = [
+  ...['find', 'findOne', 'count', 'create', 'update'].map(
+    (action) => `plugin::users-permissions.user.${action}`,
+  ),
+  // Needed so `populate[role]` works on /api/users responses.
+  'plugin::users-permissions.role.find',
+  'plugin::users-permissions.role.findOne',
+];
+
+async function ensureRole(
+  strapi: Core.Strapi,
+  role: { name: string; type: string; description: string },
+) {
+  const existing = await strapi.db
+    .query('plugin::users-permissions.role')
+    .findOne({ where: { type: role.type } });
+  if (existing) return existing;
+
+  strapi.log.info(`[permissions] creating role "${role.type}"`);
+  return strapi.db.query('plugin::users-permissions.role').create({ data: role });
+}
 
 async function grantPermissions(strapi: Core.Strapi, roleType: string, actions: string[]) {
   const role = await strapi.db
@@ -61,6 +85,21 @@ export default {
     await grantPermissions(strapi, 'authenticated', [
       ...bookContentActions,
       ...actionsFor(STUDENT_OWNED, CRUD_ACTIONS),
+    ]);
+
+    // Teachers use the Next.js /admin dashboard: they manage student accounts
+    // and every student's progress/results. Assign this role to a user in
+    // Content Manager → User → role.
+    await ensureRole(strapi, {
+      name: 'Teacher',
+      type: TEACHER_ROLE,
+      description: 'Manages students and their progress from the /admin dashboard',
+    });
+    await grantPermissions(strapi, TEACHER_ROLE, [
+      ...bookContentActions,
+      ...actionsFor(STUDENT_OWNED, CRUD_ACTIONS),
+      ...teacherUserActions,
+      'plugin::users-permissions.user.me',
     ]);
   },
 };

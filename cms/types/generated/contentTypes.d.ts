@@ -1301,6 +1301,7 @@ export interface PluginUsersPermissionsUser
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    country: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1313,12 +1314,18 @@ export interface PluginUsersPermissionsUser
       'oneToMany',
       'api::exercise-attempt.exercise-attempt'
     >;
+    fullName: Schema.Attribute.String;
+    level: Schema.Attribute.Enumeration<
+      ['beginner', 'intermediate', 'advanced']
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    nativeLanguage: Schema.Attribute.String;
+    notes: Schema.Attribute.Text;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{

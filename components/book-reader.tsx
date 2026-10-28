@@ -14,6 +14,7 @@ import GeneralFlyingAreaChapter from '@/components/general-flying-area-chapter'
 import FlightPlannerChapter from '@/components/flight-planner-chapter'
 import ExercisesChapter from '@/components/exercises-chapter'
 import TestsChapter from '@/components/tests-chapter'
+import { BOOK_CHAPTERS } from '@/lib/chapters'
 import type { Accent } from '@/lib/speech'
 import { accentLabels, cancelSpeech, getAccent, primeVoices, setAccent, speak } from '@/lib/speech'
 
@@ -27,16 +28,7 @@ const alphabet = [
   ['Y', 'Yankee', 'YANG-key'], ['Z', 'Zulu', 'ZOO-loo'],
 ]
 
-const chapters = [
-  { id: 'cover', label: 'Cover' },
-  { id: 'nato', label: '01 · The radio' },
-  { id: 'signal', label: '02 · Signal & silence' },
-  { id: 'exercises', label: '03 · Exercises' },
-  { id: 'radio', label: '04 · Radio procedures' },
-  { id: 'gfa', label: '05 · General Flying Area' },
-  { id: 'planner', label: '06 · Flight planner' },
-  { id: 'tests', label: '07 · Tests' },
-]
+const chapters = BOOK_CHAPTERS
 
 function toNato(value: string) {
   return value.toUpperCase().split('').map((char) => {
