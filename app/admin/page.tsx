@@ -45,6 +45,7 @@ export default async function StudentsPage({
         </div>
         <Button
           render={<Link href="/admin/students/new" />}
+          nativeButton={false}
           className="bg-navy text-paper hover:bg-navy/90"
         >
           <Plus /> Add student
