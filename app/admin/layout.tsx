@@ -27,14 +27,22 @@ export default async function AdminLayout({ children }: Readonly<{ children: Rea
             </div>
           </Link>
           {signedIn && (
-            <form action={logout}>
-              <button
-                type="submit"
+            <div className="flex items-center gap-5">
+              <Link
+                href="/admin/generator"
                 className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink/55 transition hover:text-ink"
               >
-                Sign out
-              </button>
-            </form>
+                AI generator
+              </Link>
+              <form action={logout}>
+                <button
+                  type="submit"
+                  className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink/55 transition hover:text-ink"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
           )}
         </div>
       </header>

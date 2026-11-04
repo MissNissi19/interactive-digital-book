@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import ExplainMistake from '@/components/ai/explain-mistake'
 import { generalFlyingAreaScenarios } from '@/components/general-flying-area-chapter'
 import { phoneticAlphabet } from '@/components/radio-procedures-chapter'
 import type { Accent } from '@/lib/speech'
@@ -172,6 +173,17 @@ function ListenExercise() {
                 )
               })}
             </div>
+            {picked !== null && question.options[picked] !== question.said && (
+              <ExplainMistake
+                key={index}
+                input={{
+                  kind: 'listening',
+                  prompt: 'Which transmission did you hear?',
+                  answer: question.options[picked],
+                  expected: question.said,
+                }}
+              />
+            )}
             {picked !== null && (
               <Button onClick={next} className="gap-2 bg-navy text-paper hover:bg-navy/90">{index + 1 < questions.length ? 'Next' : 'See score'} <ChevronRight className="size-4" /></Button>
             )}
@@ -256,6 +268,7 @@ function ReadbackExercise() {
                   <div className="space-y-2">
                     <p className="flex items-center gap-2 font-serif text-sm text-ink"><X className="size-4 text-red-800/70" /> Missing: <span className="font-mono text-xs text-red-800/80">{missing.join(' · ')}</span></p>
                     <p className="font-serif text-sm text-ink/60">Model: <em>{drill.model}</em></p>
+                    <ExplainMistake key={index} input={{ kind: 'readback', prompt: drill.prompt, answer: value, expected: drill.model, missing }} />
                   </div>
                 )}
                 <Button onClick={next} className="mt-3 gap-2 bg-navy text-paper hover:bg-navy/90">{index + 1 < readbackDrills.length ? 'Next' : 'See score'} <ChevronRight className="size-4" /></Button>
@@ -336,7 +349,10 @@ function SpellingExercise() {
                 {passed ? (
                   <p className="flex items-center justify-center gap-2 font-serif text-sm text-ink"><Check className="size-4 text-brass-dark" /> Perfect spelling.</p>
                 ) : (
-                  <p className="text-center font-serif text-sm text-ink/70">Expected: <em className="text-ink">{expected}</em></p>
+                  <>
+                    <p className="text-center font-serif text-sm text-ink/70">Expected: <em className="text-ink">{expected}</em></p>
+                    <ExplainMistake key={index} className="mt-3 flex flex-col items-center" input={{ kind: 'spelling', prompt: `Spell the call sign ${callsign}`, answer: value, expected }} />
+                  </>
                 )}
                 <div className="mt-3 flex justify-center"><Button onClick={next} className="gap-2 bg-navy text-paper hover:bg-navy/90">{index + 1 < items.length ? 'Next' : 'See score'} <ChevronRight className="size-4" /></Button></div>
               </div>

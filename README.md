@@ -103,3 +103,30 @@ radio test (`components/tests-chapter.tsx`) and each finished exercise
 (`components/exercises-chapter.tsx`). Signing in reopens the book at the saved
 chapter. Everything shows up in the teacher dashboard at `/admin` and in Strapi.
 Without an account the book still works; nothing is saved.
+
+### AI features
+
+The book has three AI features, all server-side (the API keys never reach the browser):
+
+| Where | What | Code |
+| ----- | ---- | ---- |
+| Book, every chapter | **Ask the tutor** chat (bottom-right) for signed-in students | `components/ai/tutor-chat.tsx`, `POST /api/ai/tutor` |
+| Tests + exercises | **Explain my mistake** under every wrong answer | `components/ai/explain-mistake.tsx`, `POST /api/ai/explain` |
+| `/admin/generator` | Teacher generator for quiz questions, readback drills and lesson handouts | `components/admin/ai-generator.tsx`, `lib/admin/ai-actions.ts` |
+
+Requests go to free providers with automatic fallback **Gemini → Groq → OpenRouter**
+(`lib/ai/providers.ts`); a provider without a key is skipped, and if one fails or is
+rate-limited the next one answers. The shared book facts used in the prompts are in
+`lib/ai/prompts.ts`. Add the keys to `.env.local` (and to the hosting environment):
+
+```bash
+GEMINI_API_KEY=...       # https://aistudio.google.com/apikey
+GROQ_API_KEY=...         # https://console.groq.com/keys
+OPENROUTER_API_KEY=...   # https://openrouter.ai/keys
+# optional overrides
+# GEMINI_MODEL=gemini-2.5-flash
+# GROQ_MODEL=llama-3.3-70b-versatile
+# OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free
+```
+
+The student features require a signed-in, non-blocked student; the generator requires the Teacher role.

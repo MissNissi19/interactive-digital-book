@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { ScoreBar, shuffle } from '@/components/exercises-chapter'
+import ExplainMistake from '@/components/ai/explain-mistake'
 import { cancelSpeech, primeVoices } from '@/lib/speech'
 import { useStudent } from '@/lib/student/client'
 
@@ -165,6 +166,18 @@ function RadioTest() {
                         </span>
                       </span>
                     </p>
+                    {!right && (
+                      <ExplainMistake
+                        className="mt-2 pl-6"
+                        input={{
+                          kind: 'test',
+                          prompt: item.question,
+                          answer: given === null ? '(not answered)' : item.options[given],
+                          expected: item.options[item.answer],
+                          options: item.options,
+                        }}
+                      />
+                    )}
                   </div>
                 )
               })}
