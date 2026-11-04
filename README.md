@@ -124,9 +124,9 @@ GEMINI_API_KEY=...       # https://aistudio.google.com/apikey
 GROQ_API_KEY=...         # https://console.groq.com/keys
 OPENROUTER_API_KEY=...   # https://openrouter.ai/keys
 # optional overrides
-# GEMINI_MODEL=gemini-2.5-flash
-# GROQ_MODEL=llama-3.3-70b-versatile
-# OPENROUTER_MODEL=meta-llama/llama-3.3-70b-instruct:free
+# GEMINI_MODEL=gemini-flash-lite-latest
+# GROQ_MODEL=openai/gpt-oss-120b
+# OPENROUTER_MODEL=nvidia/nemotron-3.5-lightning:free
 ```
 
 The student features require a signed-in, non-blocked student; the generator requires the Teacher role.

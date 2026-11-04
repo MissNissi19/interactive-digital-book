@@ -1,7 +1,9 @@
 /**
  * Server-only AI client with automatic fallback between free providers:
  * Gemini → Groq → OpenRouter. All three expose an OpenAI-compatible
- * chat-completions endpoint; providers without an API key are skipped.
+ * chat-completions endpoint; providers without an API key are skipped, and a
+ * provider that errors, times out, is overloaded or returns an empty reply is
+ * skipped in favour of the next one.
  *
  * Env (.env.local):
  *   GEMINI_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY
@@ -20,9 +22,11 @@ interface Provider {
   model: string
   headers?: Record<string, string>
   extra?: Record<string, unknown>
+  /** Extra completion tokens for models that spend part of the budget on hidden reasoning. */
+  reasoningHeadroom?: number
 }
 
-const PROVIDER_TIMEOUT_MS = 15_000
+const PROVIDER_TIMEOUT_MS = 12_000
 const TOTAL_DEADLINE_MS = 40_000
 
 function providers(): Provider[] {
@@ -31,22 +35,24 @@ function providers(): Provider[] {
       name: 'gemini',
       url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
       key: process.env.GEMINI_API_KEY,
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-      // Thinking would eat the token budget of short answers.
-      extra: { reasoning_effort: 'none' },
+      model: process.env.GEMINI_MODEL || 'gemini-flash-lite-latest',
     },
     {
       name: 'groq',
       url: 'https://api.groq.com/openai/v1/chat/completions',
       key: process.env.GROQ_API_KEY,
-      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+      extra: { reasoning_effort: 'low' },
+      reasoningHeadroom: 500,
     },
     {
       name: 'openrouter',
       url: 'https://openrouter.ai/api/v1/chat/completions',
       key: process.env.OPENROUTER_API_KEY,
-      model: process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
+      model: process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3.5-lightning:free',
       headers: { 'HTTP-Referer': 'https://interactive-digital-book.netlify.app', 'X-Title': 'Interactive Digital Book' },
+      extra: { reasoning: { effort: 'low' } },
+      reasoningHeadroom: 1000,
     },
   ]
   return list.filter((provider) => Boolean(provider.key))
@@ -55,6 +61,8 @@ function providers(): Provider[] {
 export const isAiConfigured = () => providers().length > 0
 
 export class AiUnavailableError extends Error {}
+
+const stripThoughts = (text: string) => text.replace(/<(thought|think)>[\s\S]*?<\/\1>/gi, '').trim()
 
 export async function generateText(
   messages: ChatMessage[],
@@ -79,7 +87,7 @@ export async function generateText(
         body: JSON.stringify({
           model: provider.model,
           messages,
-          max_tokens: options.maxTokens ?? 700,
+          max_tokens: (options.maxTokens ?? 700) + (provider.reasoningHeadroom ?? 0),
           temperature: options.temperature ?? 0.4,
           ...(options.json ? { response_format: { type: 'json_object' } } : {}),
           ...provider.extra,
@@ -92,7 +100,7 @@ export async function generateText(
         continue
       }
       const data = (await res.json()) as { choices?: { message?: { content?: string | null } }[] }
-      const text = data.choices?.[0]?.message?.content?.trim()
+      const text = stripThoughts(data.choices?.[0]?.message?.content ?? '')
       if (!text) {
         failures.push(`${provider.name}: empty response`)
         continue
