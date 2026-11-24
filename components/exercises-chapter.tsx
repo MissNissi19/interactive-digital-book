@@ -331,7 +331,7 @@ function SpellingExercise() {
       <CardHeader className="border-b border-ink/10 pb-5">
         <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-brass-dark"><SpellCheck className="size-4" /> Spell it in NATO</p>
         <CardTitle className="mt-2 font-display text-3xl text-ink">Say the call sign properly</CardTitle>
-        <CardDescription className="mt-2 max-w-2xl font-serif text-base leading-relaxed">Write the phonetic spelling of each call sign, e.g. “Zulu Sierra Alfa Bravo Charlie”.</CardDescription>
+        <CardDescription className="mt-2 max-w-2xl font-serif text-base leading-relaxed">Write the phonetic spelling of each call sign, e.g. “Zulu Sierra X-ray Yankee Zulu”.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 p-5">
         {!finished && (
@@ -339,7 +339,7 @@ function SpellingExercise() {
             <ScoreBar done={done} total={items.length} correct={correct} />
             <p className="text-center font-display text-5xl tracking-wide text-ink">{callsign}</p>
             <div className="flex flex-wrap justify-center gap-2">
-              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="e.g. zulu sierra alfa bravo charlie" disabled={checked} aria-label="Phonetic spelling" className="w-full max-w-lg border-ink/15 bg-white text-center font-serif text-ink" />
+              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="e.g. zulu sierra x-ray yankee zulu" disabled={checked} aria-label="Phonetic spelling" className="w-full max-w-lg border-ink/15 bg-white text-center font-serif text-ink" />
             </div>
             <div className="flex justify-center">
               <Button onClick={check} disabled={checked || !value.trim()} className="gap-2 bg-navy text-paper hover:bg-navy/90"><Check className="size-4" /> Check</Button>
