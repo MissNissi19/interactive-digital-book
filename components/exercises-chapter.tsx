@@ -71,7 +71,7 @@ const readbackDrills: { prompt: string; model: string; required: string[] }[] = 
   },
 ]
 
-const spellingItems = ['ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC']
+const spellingItems = ['ZS-ABC']
 
 const letterWordMap = new Map(phoneticAlphabet.map(([letter, word]) => [letter, word]))
 
