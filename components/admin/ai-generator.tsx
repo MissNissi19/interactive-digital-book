@@ -65,7 +65,7 @@ export default function AiGenerator() {
             required
             maxLength={300}
             defaultValue={state.topic}
-            placeholder="e.g. joining the circuit at Rand"
+            placeholder="e.g. joining the circuit at Signal"
             className="bg-white"
           />
         </div>

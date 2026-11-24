@@ -70,8 +70,8 @@ const radioCheck: Scenario = {
   kicker: 'Before anything else',
   intro: 'Use the correct frequency: ensure your radio is tuned to the airport tower’s designated frequency (118.7 for FAGM), and turn the volume control up. After transmitting your radio check, listen carefully for the ATC’s response with a signal strength rating.',
   lines: [
-    { role: 'pilot', text: 'Rand Tower, ZS-PTA, Radio Check on 118.7' },
-    { role: 'tower', text: 'ZS-PTA, Rand Tower, reading strength 5, how do you read?' },
+    { role: 'pilot', text: 'Signal Tower, ZS-PTA, Radio Check on 118.7' },
+    { role: 'tower', text: 'ZS-PTA, Signal Tower, reading strength 5, how do you read?' },
     { role: 'pilot', text: 'Strength 5, PTA' },
   ],
 }

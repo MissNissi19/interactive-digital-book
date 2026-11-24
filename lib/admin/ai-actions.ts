@@ -70,7 +70,7 @@ export async function generateMaterial(_prev: GeneratorState, form: FormData): P
   const levelValue = str(form.get('level'))
   const level = (STUDENT_LEVELS as string[]).includes(levelValue) ? levelValue : 'intermediate'
   const count = Math.min(Math.max(Number.parseInt(str(form.get('count')), 10) || 5, 1), 10)
-  if (!topic) return { error: 'Enter a topic, e.g. “joining the circuit at Rand”.', kind }
+  if (!topic) return { error: 'Enter a topic, e.g. “joining the circuit at Signal”.', kind }
 
   const system = [
     'You help an aviation English teacher create training material for the interactive book below. Material must be accurate, consistent with the book and suitable for the given level.',

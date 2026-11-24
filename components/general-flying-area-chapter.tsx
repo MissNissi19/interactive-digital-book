@@ -15,8 +15,8 @@ const scenarios: Scenario[] = [
     kicker: 'Page 3 · Departing FAGM',
     intro: 'A General Flying Area (GF) refers to an airspace for non-commercial activities like sport flying, leisure flying, pilot training etc. The one we primarily use is the Johannesburg Flight Training Area FAD182.',
     lines: [
-      { role: 'pilot', text: 'Good day Rand Tower, this is ZS-KSF' },
-      { role: 'tower', text: 'ZS-KSF, Rand Tower Good day, Go Ahead' },
+      { role: 'pilot', text: 'Good day Signal Tower, this is ZS-KSF' },
+      { role: 'tower', text: 'ZS-KSF, Signal Tower Good day, Go Ahead' },
       { role: 'pilot', text: 'KSF C172 …… Crew onboard ……hrs Duration ……hrs Endurance, requesting taxi instructions for a flight to the Johannesburg General Flying Area' },
       { role: 'tower', text: 'KSF taxi to holding point Runway 35, hold short Runway 29, QNH 10…' },
       { role: 'pilot', text: 'QNH 10…, taxi to holding point Runway 35, hold short Runway 29, KSF' },
@@ -63,7 +63,7 @@ const scenarios: Scenario[] = [
     label: 'Special rules areas',
     title: 'Radio procedures: JHB Special Rules Area',
     kicker: 'Page 5 · Leaving the FAGM ATZ',
-    intro: 'When leaving the Rand Airport Aerodrome Traffic Zone (FAGM ATZ) overhead the Silver Ball you enter the JHB Special Rules South Area and change frequency to 125.6. If routing outbound to the north you enter JHB Special Rules West Area on 125.8.',
+    intro: 'When leaving the Signal Airport Aerodrome Traffic Zone (FAGM ATZ) overhead the Silver Ball you enter the JHB Special Rules South Area and change frequency to 125.6. If routing outbound to the north you enter JHB Special Rules West Area on 125.8.',
     lines: [
       { role: 'action', text: 'Template: Traffic addressing · Who and type · Where · Altitude · Routing · Who' },
       { role: 'pilot', text: 'Traffic Special Rules South, ZS-OFU C172, Overhead the Silver Ball at 6300 ft climbing to 7000 ft on QNH 1024, routing to the JHB General Flying Area via the hippo quarry next, OFU' },
@@ -74,13 +74,13 @@ const scenarios: Scenario[] = [
   },
   {
     id: 'inbound-fagm',
-    title: 'Radio procedures: routing back to Rand Airport (FAGM)',
-    label: 'Inbound to Rand',
+    title: 'Radio procedures: routing back to Signal Airport (FAGM)',
+    label: 'Inbound to Signal',
     kicker: 'Pages 8–9 · Inbound from the GFA',
     intro: 'When routing back from the General Flying Area, call inbound overhead Mall of the South maintaining 6500 ft. If no contact or clearance is established by Romeo Delta (NDB beacon), commence orbits while broadcasting 125.6 and monitoring 118.7.',
     lines: [
-      { role: 'pilot', text: 'Rand Tower Good day, this is ZS-SVH' },
-      { role: 'tower', text: 'ZS-SVH, Rand Tower Good day, Go Ahead' },
+      { role: 'pilot', text: 'Signal Tower Good day, this is ZS-SVH' },
+      { role: 'tower', text: 'ZS-SVH, Signal Tower Good day, Go Ahead' },
       { role: 'pilot', text: 'Overhead Mall of the South 6500 ft, …… Crew onboard ……hrs Endurance, Inbound from GFA, requesting inbound clearance for a full stop, SVH' },
       { role: 'tower', text: 'SVH QNH 1022, join and report right downwind Runway 17 at 6500 ft' },
       { role: 'pilot', text: 'Join and report right downwind Runway 17 at 6500 ft, QNH 1022, SVH' },
@@ -106,8 +106,8 @@ const scenarios: Scenario[] = [
     title: 'Radio procedures: Circuits',
     kicker: 'Pages 10–11 · Touch and go',
     lines: [
-      { role: 'pilot', text: 'Good day Rand Tower, this is ZS-SHR' },
-      { role: 'tower', text: 'ZS-SHR, Rand Tower Good day, Go Ahead' },
+      { role: 'pilot', text: 'Good day Signal Tower, this is ZS-SHR' },
+      { role: 'tower', text: 'ZS-SHR, Signal Tower Good day, Go Ahead' },
       { role: 'pilot', text: 'SHR C172 …… Crew onboard ……hrs Duration ……hrs Endurance, requesting taxi instructions for Circuits, SHR' },
       { role: 'tower', text: 'SHR taxi to holding point Runway 11, cross Runway 35, QNH 1027' },
       { role: 'pilot', text: 'QNH 1027, taxi to holding point Runway 11, cross Runway 35, SHR' },
@@ -185,7 +185,7 @@ const scenarios: Scenario[] = [
     lines: [
       { role: 'pilot', text: 'Info South, Good day, this is ZS-NBN' },
       { role: 'info', text: 'ZS-NBN, Good day, Go Ahead' },
-      { role: 'pilot', text: 'NBN C172, airborne Rand Airport, 0700z, overhead Fochville at 7000 ft, requesting FL085, routing Klerksdorp, ETA 0900z, NBN' },
+      { role: 'pilot', text: 'NBN C172, airborne Signal Airport, 0700z, overhead Fochville at 7000 ft, requesting FL085, routing Klerksdorp, ETA 0900z, NBN' },
       { role: 'info', text: 'ZS-NBN, no reported traffic for the climb FL085, report maintaining' },
       { role: 'pilot', text: 'No reported traffic, report maintaining FL085, NBN' },
       { role: 'action', text: 'Continue the climb and once established:' },
@@ -205,8 +205,8 @@ const scenarios: Scenario[] = [
     kicker: 'Pages 15–16 · Standard overhead join',
     intro: 'To join an uncontrolled circuit in accordance with the Standard Overhead Joining Procedure always approach the airfield at 2000 ft AGL or as per AIP, and make the first radio call at approximately 5–10nm inbound. Template: Traffic addressing · Who and type · Details · QNH · Intention · Who.',
     lines: [
-      { role: 'action', text: 'Example when starting at an uncontrolled airfield (including Rand Airport when the tower is closed / unmanned):' },
-      { role: 'pilot', text: 'Rand Traffic, ZS-PTA C172, parked Hanger 33, …… Crew onboard ……hrs Duration ……hrs Endurance, taxiing to holding point Runway 35, will hold short Runway 29, QNH 1026, for Circuits / Flight to General Flying Area, PTA' },
+      { role: 'action', text: 'Example when starting at an uncontrolled airfield (including Signal Airport when the tower is closed / unmanned):' },
+      { role: 'pilot', text: 'Signal Traffic, ZS-PTA C172, parked Hanger 33, …… Crew onboard ……hrs Duration ……hrs Endurance, taxiing to holding point Runway 35, will hold short Runway 29, QNH 1026, for Circuits / Flight to General Flying Area, PTA' },
       { role: 'action', text: 'Then report when crossing a runway, entering a runway, rolling on the runway, when airborne and when on every leg in the circuit' },
       { role: 'action', text: 'Example when entering FARG airfield, elevation 3700 ft, Runway 16/34:' },
       { role: 'pilot', text: '1 · Rustenburg Traffic, ZS-PTA C172, inbound from the East approximately 5nm to join overhead the airfield at 5700 ft, QNH 1020, PTA' },
@@ -247,13 +247,13 @@ const scenarios: Scenario[] = [
       { role: 'action', text: 'Example with Wonderboom airport:' },
       { role: 'pilot', text: 'Wonderboom Tower, Good day, this is ZS-KBW' },
       { role: 'tower', text: 'ZS-KBW, Wonderboom Tower Good day, Go Ahead' },
-      { role: 'pilot', text: 'KBW Piper Cherokee …… Crew onboard ……hrs Endurance, airborne Rustenburg 0930z overhead Rosslyn at 6500 ft, requesting a touch and go, routing to Rand Airport, KBW' },
+      { role: 'pilot', text: 'KBW Piper Cherokee …… Crew onboard ……hrs Endurance, airborne Rustenburg 0930z overhead Rosslyn at 6500 ft, requesting a touch and go, routing to Signal Airport, KBW' },
       { role: 'tower', text: 'KBW cleared inbound 5500 ft, QNH 1021, join and report right Downwind Runway 29 overhead Bon Accord Dam at 5100 ft' },
       { role: 'pilot', text: 'Cleared inbound 5500 ft, QNH 1021, join and report right Downwind Runway 29 overhead Bon Accord Dam at 5100 ft, KBW' },
       { role: 'action', text: 'Example with Lanseria International airport:' },
       { role: 'pilot', text: 'Lanseria Tower, Good day, this is ZS-KCZ' },
       { role: 'tower', text: 'ZS-KCZ, Lanseria Tower Good day, Go Ahead' },
-      { role: 'pilot', text: 'KCZ C172 …… Crew onboard ……hrs Endurance, airborne FAGM 0930z, overhead Tracking Station at 6500 ft, requesting inbound clearance for a touch and go, thereafter routing back to Rand, KCZ' },
+      { role: 'pilot', text: 'KCZ C172 …… Crew onboard ……hrs Endurance, airborne FAGM 0930z, overhead Tracking Station at 6500 ft, requesting inbound clearance for a touch and go, thereafter routing back to Signal, KCZ' },
       { role: 'tower', text: 'KCZ cleared inbound not above 5500 ft, QNH 1021, join and report left Downwind Runway 07 at 5500 ft' },
       { role: 'pilot', text: 'Cleared inbound not above 5500 ft, QNH 1021, join and report left Downwind Runway 07 at 5500 ft, KCZ' },
     ],
@@ -312,7 +312,7 @@ function GeneralFlyingAreaChapter() {
         </div>
       </div>
       <Separator className="my-8 bg-ink/10" />
-      <p className="max-w-3xl font-serif text-xl leading-relaxed text-ink/75">Every exchange from the General Flying Area departure onwards: special rules areas, the route home to Rand, circuits, go arounds and orbits, flight information service, unmanned airfields and other controlled airspaces.</p>
+      <p className="max-w-3xl font-serif text-xl leading-relaxed text-ink/75">Every exchange from the General Flying Area departure onwards: special rules areas, the route home to Signal, circuits, go arounds and orbits, flight information service, unmanned airfields and other controlled airspaces.</p>
 
       <nav className="mt-8 flex flex-wrap gap-2" aria-label="General Flying Area sections">
         {scenarios.map((item) => (
