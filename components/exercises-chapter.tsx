@@ -45,33 +45,33 @@ function buildListenQuestions(): ListenQuestion[] {
 
 const readbackDrills: { prompt: string; model: string; required: string[] }[] = [
   {
-    prompt: 'Tower: “KSF taxi to holding point Runway 35, hold short Runway 29, QNH 1027”',
-    model: 'QNH 1027, taxi to holding point Runway 35, hold short Runway 29, KSF',
-    required: ['1027', 'holding point', '35', 'hold short', '29', 'KSF'],
+    prompt: 'Tower: “ABC taxi to holding point Runway 35, hold short Runway 29, QNH 1027”',
+    model: 'QNH 1027, taxi to holding point Runway 35, hold short Runway 29, ABC',
+    required: ['1027', 'holding point', '35', 'hold short', '29', 'ABC'],
   },
   {
-    prompt: 'Tower: “KSF, surface wind 290 10 knots, Runway 35, Cleared for take-off, left hand turn, report outbound Silver Ball 6300 ft”',
-    model: 'Cleared for take-off Runway 35, left hand turn, report outbound Silver Ball 6300 ft, KSF',
-    required: ['cleared', 'take off', '35', 'left hand turn', 'silver ball', '6300', 'KSF'],
+    prompt: 'Tower: “ABC, surface wind 290 10 knots, Runway 35, Cleared for take-off, left hand turn, report outbound Silver Ball 6300 ft”',
+    model: 'Cleared for take-off Runway 35, left hand turn, report outbound Silver Ball 6300 ft, ABC',
+    required: ['cleared', 'take off', '35', 'left hand turn', 'silver ball', '6300', 'ABC'],
   },
   {
-    prompt: 'Tower: “SVH QNH 1022, join and report right downwind Runway 17 at 6500 ft”',
-    model: 'Join and report right downwind Runway 17 at 6500 ft, QNH 1022, SVH',
-    required: ['join', 'report', 'right downwind', '17', '6500', '1022', 'SVH'],
+    prompt: 'Tower: “ABC QNH 1022, join and report right downwind Runway 17 at 6500 ft”',
+    model: 'Join and report right downwind Runway 17 at 6500 ft, QNH 1022, ABC',
+    required: ['join', 'report', 'right downwind', '17', '6500', '1022', 'ABC'],
   },
   {
-    prompt: 'Tower: “KBW cleared inbound 5500 ft, QNH 1021, join and report right Downwind Runway 29 overhead Bon Accord Dam at 5100 ft”',
-    model: 'Cleared inbound 5500 ft, QNH 1021, join and report right Downwind Runway 29 overhead Bon Accord Dam at 5100 ft, KBW',
-    required: ['cleared inbound', '5500', '1021', 'right downwind', '29', 'bon accord', '5100', 'KBW'],
+    prompt: 'Tower: “ABC cleared inbound 5500 ft, QNH 1021, join and report right Downwind Runway 29 overhead Bon Accord Dam at 5100 ft”',
+    model: 'Cleared inbound 5500 ft, QNH 1021, join and report right Downwind Runway 29 overhead Bon Accord Dam at 5100 ft, ABC',
+    required: ['cleared inbound', '5500', '1021', 'right downwind', '29', 'bon accord', '5100', 'ABC'],
   },
   {
-    prompt: 'Info: “ZS-NBN, no reported traffic for the climb FL085, report maintaining”',
-    model: 'No reported traffic, report maintaining FL085, NBN',
-    required: ['no reported traffic', 'report maintaining', 'flight level', 'NBN'],
+    prompt: 'Info: “ZS-ABC, no reported traffic for the climb FL085, report maintaining”',
+    model: 'No reported traffic, report maintaining FL085, ABC',
+    required: ['no reported traffic', 'report maintaining', 'flight level', 'ABC'],
   },
 ]
 
-const spellingItems = ['ZS-PTA', 'ZS-KSF', 'ZS-NBN', 'ZS-SVH', 'ZS-OFU', 'ZS-KBW', 'ZS-JZS', 'ZS-KCZ']
+const spellingItems = ['ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC', 'ZS-ABC']
 
 const letterWordMap = new Map(phoneticAlphabet.map(([letter, word]) => [letter, word]))
 
@@ -331,7 +331,7 @@ function SpellingExercise() {
       <CardHeader className="border-b border-ink/10 pb-5">
         <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-brass-dark"><SpellCheck className="size-4" /> Spell it in NATO</p>
         <CardTitle className="mt-2 font-display text-3xl text-ink">Say the call sign properly</CardTitle>
-        <CardDescription className="mt-2 max-w-2xl font-serif text-base leading-relaxed">Write the phonetic spelling of each call sign, e.g. “Zulu Sierra Papa Tango Alfa”.</CardDescription>
+        <CardDescription className="mt-2 max-w-2xl font-serif text-base leading-relaxed">Write the phonetic spelling of each call sign, e.g. “Zulu Sierra Alfa Bravo Charlie”.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 p-5">
         {!finished && (
@@ -339,7 +339,7 @@ function SpellingExercise() {
             <ScoreBar done={done} total={items.length} correct={correct} />
             <p className="text-center font-display text-5xl tracking-wide text-ink">{callsign}</p>
             <div className="flex flex-wrap justify-center gap-2">
-              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="e.g. zulu sierra papa tango alfa" disabled={checked} aria-label="Phonetic spelling" className="w-full max-w-lg border-ink/15 bg-white text-center font-serif text-ink" />
+              <Input value={value} onChange={(event) => setValue(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && check()} placeholder="e.g. zulu sierra alfa bravo charlie" disabled={checked} aria-label="Phonetic spelling" className="w-full max-w-lg border-ink/15 bg-white text-center font-serif text-ink" />
             </div>
             <div className="flex justify-center">
               <Button onClick={check} disabled={checked || !value.trim()} className="gap-2 bg-navy text-paper hover:bg-navy/90"><Check className="size-4" /> Check</Button>
